@@ -23,10 +23,16 @@ public class Security {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
+                )
+                .oauth2Login(oauth -> oauth
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true)
                 );
 
         return http.build();
