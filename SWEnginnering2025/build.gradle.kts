@@ -34,6 +34,10 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+		// 유효성 검사 (입력값 체크) [cite: 1484]
+	implementation ("org.springframework.boot:spring-boot-starter-validation")
+		// H2 데이터베이스 (도커 대신 로컬 테스트용)
+	runtimeOnly ("com.h2database:h2")
 }
 
 tasks.withType<Test> {
