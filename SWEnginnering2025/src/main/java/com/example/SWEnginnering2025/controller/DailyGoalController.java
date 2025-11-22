@@ -3,6 +3,7 @@ package com.example.SWEnginnering2025.controller;
 import com.example.SWEnginnering2025.dto.DailyGoalRequest;
 import com.example.SWEnginnering2025.dto.DailyGoalResponse;
 import com.example.SWEnginnering2025.service.DailyGoalService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +17,14 @@ public class DailyGoalController {
 
     // 1. 목표 생성 (POST)
     @PostMapping
-    public ResponseEntity<DailyGoalResponse> createGoal(@RequestBody DailyGoalRequest request) {
+    public ResponseEntity<DailyGoalResponse> createGoal(@RequestBody @Valid DailyGoalRequest request) { // @Valid 추가
         DailyGoalResponse response = dailyGoalService.createGoal(request);
         return ResponseEntity.ok(response);
     }
 
     // 2. 목표 수정 (PUT /api/v1/goals/{id})
     @PutMapping("/{id}")
-    public ResponseEntity<DailyGoalResponse> updateGoal(@PathVariable Long id, @RequestBody DailyGoalRequest request) {
+    public ResponseEntity<DailyGoalResponse> updateGoal(@PathVariable Long id, @RequestBody @Valid DailyGoalRequest request) { // @Valid 추가
         DailyGoalResponse response = dailyGoalService.updateGoal(id, request);
         return ResponseEntity.ok(response);
     }

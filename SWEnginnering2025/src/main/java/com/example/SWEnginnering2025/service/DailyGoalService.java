@@ -22,6 +22,9 @@ public class DailyGoalService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .targetDate(request.getTargetDate())
+                .category(request.getCategory())
+                .isNotificationEnabled(request.isNotificationEnabled())
+                .scheduledTime(request.getScheduledTime())
                 .userId(1L) // 임시 유저 ID
                 .build();
 
@@ -34,12 +37,11 @@ public class DailyGoalService {
     // 2. 목표 수정
     @Transactional
     public DailyGoalResponse updateGoal(Long id, DailyGoalRequest request) {
-        // DB에서 목표 찾기 (없으면 에러 냄)
         DailyGoal goal = dailyGoalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
-
         // 내용 수정 (더티 체킹: 저장(save) 안 불러도 알아서 DB가 바뀜)
-        goal.update(request.getTitle(), request.getDescription(), request.getTargetDate());
+        goal.update(request.getTitle(), request.getDescription(), request.getTargetDate(),
+                request.getCategory(), request.isNotificationEnabled(), request.getScheduledTime());
 
         return DailyGoalResponse.from(goal);
     }

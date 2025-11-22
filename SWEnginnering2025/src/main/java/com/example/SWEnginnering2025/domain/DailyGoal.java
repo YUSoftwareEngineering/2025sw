@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity // 이 클래스가 DB 테이블이 됨을 명시
 @Getter // 모든 필드의 Getter 메서드 자동 생성
@@ -32,30 +33,46 @@ public class DailyGoal {
     @Column(nullable = false)
     private Boolean isCompleted = false;
 
+    @Enumerated(EnumType.STRING) // DB에 "EXERCISE" 글자로 저장됨
+    private GoalCategory category;
+
+    private boolean isNotificationEnabled; // 알림 여부
+
+    private LocalTime scheduledTime; // 예정 시간
+
     private LocalDateTime createdAt; //  생성 시각
     private LocalDateTime updatedAt; // 수정 시각
 
     @Builder // 빌더 패턴으로 객체 생성을 쉽게 함
-    public DailyGoal(Long userId, String title, String description, LocalDate targetDate) {
+    public DailyGoal(Long userId, String title, String description, LocalDate targetDate,
+                     GoalCategory category, boolean isNotificationEnabled, LocalTime scheduledTime) {
         this.userId = userId;
         this.title = title;
         this.description = description;
         this.targetDate = targetDate;
+        this.category = category;
+        this.isNotificationEnabled = isNotificationEnabled;
+        this.scheduledTime = scheduledTime;
         this.isCompleted = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     // 비즈니스 로직: 목표 수정 기능 (Setter 대신 사용)
-    public void update(String title, String description, LocalDate targetDate) {
+    public void update(String title, String description, LocalDate targetDate,
+                       GoalCategory category, boolean isNotificationEnabled, LocalTime scheduledTime) {
         this.title = title;
         this.description = description;
         this.targetDate = targetDate;
+        this.category = category;
+        this.isNotificationEnabled = isNotificationEnabled;
+        this.scheduledTime = scheduledTime;
         this.updatedAt = LocalDateTime.now();
     }
 
     // 비즈니스 로직: 완료 상태 토글
-    public void toggleStatus() {
-        this.isCompleted = !this.isCompleted;
+    public void changeStatus(boolean isCompleted) {
+        this.isCompleted = isCompleted;
+        this.updatedAt = LocalDateTime.now();
     }
 }
