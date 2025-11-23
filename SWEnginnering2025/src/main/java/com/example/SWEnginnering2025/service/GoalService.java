@@ -8,6 +8,7 @@ import com.example.SWEnginnering2025.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.SWEnginnering2025.domain.GoalStatus;
 
 @Service // "나 서비스야!" 라고 명찰 달기
 @RequiredArgsConstructor // Repository를 자동으로 연결해줌
@@ -67,6 +68,15 @@ public class GoalService {
         Goal goal = findGoalById(id);
         goal.changeStatus(request.getStatus(), request.getStatusMemo(), request.getProofUrl());
         return GoalResponse.from(goal);
+    }
+
+    // 5. 실패 기록 (Goal 상태를 FAILED로 변경)
+    @Transactional
+    public void markGoalAsFailed(Long goalId){
+        Goal goal = findGoalById(goalId);
+
+        // GoalStatus enum 안에 FAILED 있는지 확인해야 함
+        goal.changeStatus(GoalStatus.FAILED, "FailureLogService 자동 기록", null);
     }
 }
 
