@@ -48,12 +48,11 @@ public class GoalService {
 
     // 3. 목표 삭제
     @Transactional
-    public void deleteGoal(Long id) {
-        // DB에서 목표 찾기
-        Goal goal = goalRepository.findById(id)
+    public GoalResponse updateStatus(Long id, CreateGoalRequest request) {
+        Goal goal = GoalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
-
-        // 삭제
-        goalRepository.delete(goal);
+        // 바뀐 메서드 호출!
+        goal.changeStatus(request.getStatus(), request.getStatusMemo(), request.getProofUrl());
+        return GoalResponse.from(goal);
     }
 }
