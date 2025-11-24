@@ -1,9 +1,13 @@
-### [준비] 목표 2개 만들기
+### [준비] 1일치 테스트 데이터용 날짜 (2025-11-25)
+
+### 18-1. 하루 목표 2개 생성
 POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "title": "목표 1번", "targetDate": "2025-11-25", "category": "ETC"
+  "title": "목표 1번",
+  "targetDate": "2025-11-25",
+  "category": "ETC"
 }
 
 ###
@@ -11,10 +15,27 @@ POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "title": "목표 2번", "targetDate": "2025-11-25", "category": "ETC"
+  "title": "목표 2번",
+  "targetDate": "2025-11-25",
+  "category": "ETC"
 }
 
-### [테스트] 1번, 2번 목표를 한 방에 '완료'로 바꾸기!
+### 18-2. (선택) 1번 목표 수정 예시
+PUT http://localhost:8080/api/v1/goals/1
+Content-Type: application/json
+
+{
+  "title": "목표 1번 - 수정됨",
+  "description": "설명도 수정",
+  "targetDate": "2025-11-26",
+  "category": "ETC"
+}
+
+### 18-3. (선택) 2번 목표 삭제 예시
+DELETE http://localhost:8080/api/v1/goals/2
+
+
+### 19-1. 1번, 2번 목표를 한 방에 '완료'로 바꾸기 (진행/완료 상태 기록)
 PATCH http://localhost:8080/api/v1/goals/status/bulk
 Content-Type: application/json
 
@@ -23,5 +44,25 @@ Content-Type: application/json
   "status": "COMPLETED"
 }
 
-### [팀원 기능 테스트] 1번 목표 강제 실패 처리
+
+### 19-2. (검증) 2025-11-25 하루 상세 조회
+GET http://localhost:8080/api/calendar/daily?userId=1&date=2025-11-25
+
+
+### 20-1. (검증) 2025-11-25의 성과 색상 조회
+# 실제 구현한 URL 에 맞게 수정해 주세요.
+GET http://localhost:8080/api/calendar/achievement-color?userId=1&date=2025-11-25
+
+
+### 21-1. 1번 목표 강제 실패 처리 (실패 원인 기록)
 POST http://localhost:8080/api/v1/goals/1/fail
+Content-Type: application/json
+
+{
+  "reason": "몸이 너무 아파서 운동을 못 함",
+  "tagIds": [1, 2]
+}
+
+### 21-2. (검증) 실패 로그/통계 조회
+# 실제 구현한 URL 에 맞게 수정해 주세요.
+GET http://localhost:8080/api/v1/failures?userId=1&from=2025-11-01&to=2025-11-30
