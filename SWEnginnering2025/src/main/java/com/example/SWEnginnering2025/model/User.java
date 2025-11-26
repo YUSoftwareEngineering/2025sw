@@ -2,13 +2,19 @@
     Project: User.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.23
+    Date of last update: 2025.11.25
 */
 
 package com.example.SWEnginnering2025.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor // 예비용
+@Builder // 예비용
 @Entity
 @Table(name = "userTBL")
 public class User {

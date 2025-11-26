@@ -1,0 +1,10 @@
+diff a/SWEnginnering2025/src/main/java/com/example/SWEnginnering2025/controller/AuthController.java b/SWEnginnering2025/src/main/java/com/example/SWEnginnering2025/controller/AuthController.java	(rejected hunks)
+@@ -2,7 +2,7 @@
+     Project: AuthController.java
+     Author: YHW
+     Date of creation: 2025.11.22
+-    Date of last update: 2025.11.25
++    Date of last update: 2025.11.23
+ */
+ 
+ package com.example.SWEnginnering2025.controller;
