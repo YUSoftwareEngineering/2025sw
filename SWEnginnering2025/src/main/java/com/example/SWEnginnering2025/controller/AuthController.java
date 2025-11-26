@@ -93,6 +93,17 @@ public class AuthController {
         }
     }
 
+    // --- pw 재설정 ---
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetConfirmRequest request) {
+        try {
+            authService.resetPassword(request.getToken(), request.getNewPassword());
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     // --- 로그아웃 ---
 
     // 1. 로그아웃 전 비밀번호 재인증
