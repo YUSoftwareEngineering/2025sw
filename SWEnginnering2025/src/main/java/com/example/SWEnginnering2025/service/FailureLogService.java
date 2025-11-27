@@ -38,10 +38,12 @@ public class FailureLogService {
         this.goalService = goalService;
     }
 
-    // 1) 기본 + 사용자 태그 조회
+    // 1) 실패 기록 화면에서 사용자가 선택할 수 있는 태그 목록을 줌
     @Transactional(readOnly = true)
     public List<FailureTagDto> getFailureTags(Long userId) {
+        //기본 제공 태그 + 사용자가 만든 태그 둘 다 가져옴
         List<FailureTag> tags = failureTagRepository.findByBuiltInTrueOrUserId(userId);
+        //엔티티(FailureTag)를 클라이언트로 보내기 위한 DTO로 변환
         return tags.stream()
                 .map(t -> new FailureTagDto(t.getId(), t.getName(), t.isBuiltIn()))
                 .collect(toList());
@@ -50,36 +52,38 @@ public class FailureLogService {
     // 2) 커스텀 태그 생성
     @Transactional
     public FailureTagDto createFailureTag(CreateTagRequest request) {
+        //입력받은 태그 앞뒤 공백 제거
         String name = request.getName().trim();
         if (name.isEmpty()) {
             throw new IllegalArgumentException("태그 이름은 비어 있을 수 없습니다.");
         }
 
-        // 같은 유저 + 같은 이름 태그가 있으면 재사용
+        //커스텀 태그 만들기
         var existing = failureTagRepository.findByUserIdAndName(request.getUserId(), name);
+        //같은 유저가 같은 이름의 태그를 이미 만든 적 있는지 확인
         if (existing.isPresent()) {
             FailureTag tag = existing.get();
+            //이미 있으면 기존 태그 그대로 돌려줌
             return new FailureTagDto(tag.getId(), tag.getName(), tag.isBuiltIn());
         }
-
         FailureTag tag = new FailureTag(request.getUserId(), name, false);
         FailureTag saved = failureTagRepository.save(tag);
         return new FailureTagDto(saved.getId(), saved.getName(), saved.isBuiltIn());
     }
 
-    // 3) 실패 로그 기록
+    // 3) 실패 기록을 DB에 저장 + 해당 목표 상태를 FAILED로 바꿈
     @Transactional
     public FailureLogResponse logFailure(LogFailureRequest request) {
-
+        //태그 없이 실패 로그 남길 경우 경고 메시지
         if (request.getTagIds() == null || request.getTagIds().isEmpty()) {
             throw new IllegalArgumentException("최소 1개 이상의 태그를 선택해야 합니다.");
         }
-
+        //실패 로그에 연결할 태그들이 존재하는지 확인
         var tags = failureTagRepository.findAllById(request.getTagIds());
         if (tags.isEmpty()) {
             throw new IllegalArgumentException("선택한 태그를 찾을 수 없습니다.");
         }
-
+        //실패 로그 생성
         FailureLog log = new FailureLog(
                 request.getUserId(),
                 request.getGoalId(),
@@ -89,7 +93,7 @@ public class FailureLogService {
         );
 
         tags.forEach(log::addTag);
-
+        //INSERT 실행 -> 저장된 FailureLog 엔티티 반환
         FailureLog saved = failureLogRepository.save(log);
 
         // 목표 상태를 FAILED로 변경 (GoalService 안 구현 필요)
