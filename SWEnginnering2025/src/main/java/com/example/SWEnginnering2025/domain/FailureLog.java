@@ -3,68 +3,56 @@
         Date of creation: 2025.11.23
         Date of last update: 2025.11.23
                 */
-
 package com.example.SWEnginnering2025.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDate;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "failure_log")
 @Getter
+@NoArgsConstructor
 public class FailureLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long failureId;
+    private Long id;
 
     private Long userId;
 
-    //목표별 아이디
-    private Long goalId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "goal_id")
+    private Goal goal;
 
-    // 실패가 발생한 날짜 (캘린더/분석용)
-    private LocalDate failedDate;
+    private LocalDateTime occurredAt;
 
-    //실패에 대한 메모(예: 시험 준비 때문에 피곤해서 못함)
-    @Column(columnDefinition = "TEXT")
-    private String memo;
+    @Enumerated(EnumType.STRING)
+    private Weekday weekday;
 
-    //실패가 발생한 정확한 시간
-    @Column(nullable = false)
-    private LocalDateTime failedAt;
+    @Enumerated(EnumType.STRING)
+    private TimeSlot timeSlot;
 
     @ManyToMany
     @JoinTable(
-            name = "failure_log_tag_map",
-            joinColumns = @JoinColumn(name = "failure_id"),
+            name = "failure_log_tag",
+            joinColumns = @JoinColumn(name = "failure_log_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    private Set<FailureTag> tags = new HashSet<>();
+    private List<FailureTag> tags;
 
-    protected FailureLog() {
-    }
+    private String memo;
 
-    @Builder
-    public FailureLog(Long userId,
-                      Long goalId,
-                      LocalDate failedDate,
-                      String memo,
-                      LocalDateTime failedAt) {
+    public FailureLog(Long userId, Goal goal, LocalDateTime occurredAt,
+                      Weekday weekday, TimeSlot timeSlot, List<FailureTag> tags, String memo) {
         this.userId = userId;
-        this.goalId = goalId;
-        this.failedDate = failedDate;
+        this.goal = goal;
+        this.occurredAt = occurredAt;
+        this.weekday = weekday;
+        this.timeSlot = timeSlot;
+        this.tags = tags;
         this.memo = memo;
-        this.failedAt = failedAt;
-    }
-
-    public void addTag(FailureTag tag) {
-        this.tags.add(tag);
     }
 }
