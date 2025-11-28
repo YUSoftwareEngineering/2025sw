@@ -31,10 +31,9 @@ public class FailureTag {
     @Column(nullable = false)
     private boolean builtIn;
 
-    public FailureTag(Long userId, String name, FailureCategory category, boolean builtIn) {
+    public FailureTag(Long userId, String name,  boolean builtIn) {
         this.userId = userId;
         this.name = name;
-        this.category = category;
         this.builtIn = builtIn;
     }
 }

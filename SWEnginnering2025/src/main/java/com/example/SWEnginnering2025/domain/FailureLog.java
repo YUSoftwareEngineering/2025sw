@@ -8,13 +8,18 @@ package com.example.SWEnginnering2025.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "failure_log")
-@Getter
 @NoArgsConstructor
+@Setter
+@Getter
 public class FailureLog {
 
     @Id
@@ -23,36 +28,45 @@ public class FailureLog {
 
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goal_id")
-    private Goal goal;
+    private Long goalId;
 
-    private LocalDateTime occurredAt;
+    // 실패가 발생한 날짜 (달력 기준)
+    @Column(nullable = false)
+    private LocalDate failedDate;
 
-    @Enumerated(EnumType.STRING)
-    private Weekday weekday;
+    // 실제 실패 기록 시간 (타임라인용)
+    @Column(nullable = false)
+    private LocalDateTime failedAt;
 
-    @Enumerated(EnumType.STRING)
-    private TimeSlot timeSlot;
+    // 자유 메모
+    @Column(length = 500)
+    private String memo;
+
+    private LocalDateTime createdAt;
 
     @ManyToMany
     @JoinTable(
-            name = "failure_log_tag",
+            name = "failure_log_tag_map",
             joinColumns = @JoinColumn(name = "failure_log_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
+            inverseJoinColumns = @JoinColumn(name = "failure_tag_id")
     )
-    private List<FailureTag> tags;
+    private Set<FailureTag> tags = new HashSet<>();
 
-    private String memo;
-
-    public FailureLog(Long userId, Goal goal, LocalDateTime occurredAt,
-                      Weekday weekday, TimeSlot timeSlot, List<FailureTag> tags, String memo) {
+    // ★ FailureLogService.logFailure 에서 쓰는 생성자
+    public FailureLog(Long userId,
+                      Long goalId,
+                      LocalDate failedDate,
+                      String memo,
+                      LocalDateTime failedAt) {
         this.userId = userId;
-        this.goal = goal;
-        this.occurredAt = occurredAt;
-        this.weekday = weekday;
-        this.timeSlot = timeSlot;
-        this.tags = tags;
+        this.goalId = goalId;
+        this.failedDate = failedDate;
         this.memo = memo;
+        this.failedAt = failedAt;
+    }
+
+    // ★ 태그 추가 메서드 (FailureLogService에서 log::addTag 로 사용)
+    public void addTag(FailureTag tag) {
+        this.tags.add(tag);
     }
 }

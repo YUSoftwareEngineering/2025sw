@@ -11,37 +11,59 @@ import com.example.SWEnginnering2025.dto.failure.FailureLogResponse;
 import com.example.SWEnginnering2025.dto.failure.FailureTagDto;
 import com.example.SWEnginnering2025.dto.failure.LogFailureRequest;
 import com.example.SWEnginnering2025.service.FailureLogService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/failures")
+@RequestMapping("/api/v1/failures")
+@RequiredArgsConstructor
 public class FailureLogController {
 
     private final FailureLogService failureLogService;
 
-    public FailureLogController(FailureLogService failureLogService) {
-        this.failureLogService = failureLogService;
-    }
+    // TODO: 나중에 인증 붙이면 실제 로그인 유저 ID 사용
+    private static final Long TEMP_USER_ID = 1L;
 
-    // 시퀀스: getFailureTags(), failuretag 조회용
+    /**
+     * 1) 실패 사유 태그 목록 조회
+     *   - 기본 태그 + 사용자 커스텀 태그
+     */
     @GetMapping("/tags")
-    public ResponseEntity<List<FailureTagDto>> getFailureTags(@RequestParam Long userId) {
-        return ResponseEntity.ok(failureLogService.getFailureTags(userId));
+    public ResponseEntity<List<FailureTagDto>> getFailureTags() {
+        List<FailureTagDto> tags = failureLogService.getFailureTags(TEMP_USER_ID);
+        return ResponseEntity.ok(tags);
     }
 
-    // 시퀀스: createFailureTag(CreateTagRequest) failuretag 생성용
+    /**
+     * 2) 커스텀 태그 생성
+     */
     @PostMapping("/tags")
-    public ResponseEntity<FailureTagDto> createTag(@RequestBody CreateTagRequest request) {
-        return ResponseEntity.ok(failureLogService.createFailureTag(request));
+    public ResponseEntity<FailureTagDto> createFailureTag(@RequestBody CreateTagRequest request) {
+        FailureTagDto dto = failureLogService.createFailureTag(TEMP_USER_ID, request);
+        return ResponseEntity.ok(dto);
     }
 
-    // 시퀀스: logFailure(LogFailureRequest) 실패로그생성
-    @PostMapping("/log")
+    /**
+     * 3) 실패 기록 저장 + 해당 목표 상태 FAILED로 변경
+     */
+    @PostMapping
     public ResponseEntity<FailureLogResponse> logFailure(@RequestBody LogFailureRequest request) {
-        FailureLogResponse response = failureLogService.logFailure(request);
+        FailureLogResponse response = failureLogService.logFailure(TEMP_USER_ID, request);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 4) 특정 목표의 실패 기록 조회 (필요 시)
+     */
+    @GetMapping
+    public ResponseEntity<List<FailureLogResponse>> getFailureLogs(
+            @RequestParam Long goalId
+    ) {
+        List<FailureLogResponse> logs = failureLogService.getFailureLogs(TEMP_USER_ID, goalId);
+        return ResponseEntity.ok(logs);
+    }
 }
+

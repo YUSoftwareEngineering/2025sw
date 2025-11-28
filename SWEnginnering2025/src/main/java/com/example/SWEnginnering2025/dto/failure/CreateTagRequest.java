@@ -4,28 +4,14 @@
         Date of last update: 2025.11.23
                 */
 package com.example.SWEnginnering2025.dto.failure;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 public class CreateTagRequest {
 
     private Long userId;
     private String name;
 
-    public CreateTagRequest() {
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

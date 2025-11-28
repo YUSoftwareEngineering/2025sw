@@ -14,25 +14,22 @@ import java.util.Map;
  countByWeekday      : 요일별 실패 횟수 집계 (예: "MONDAY" -> 3)
  countByTimeOfDay    : 시간대별 실패 횟수 집계 (예: "EVENING(18-22)" -> 5)
  mostFailedWeekday   : 가장 실패가 많이 발생한 요일 (동률이면 그 중 하나)
- mostFailedTimeOfDay : 가장 실패가 많이 발생한 시간대
-
- 이 객체는 주로 AI 코칭 모듈(코칭 서비스)에서
- "어느 요일, 어느 시간대에 실패가 많이 몰려 있는지"를
- 요약해서 사용하기 위한 용도이다.
+ mostFailedTimeOfDay : 가장 실패가 많이 발생한 시간대 (동률이면 그 중 하나)
  */
+
 @Getter
 public class FailurePatternAnalysisResponse {
 
-    // 요일별 실패 횟수 ("MONDAY", "TUESDAY" ...)
+    // 예: {"MONDAY": 2, "TUESDAY": 5, ...}
     private final Map<String, Long> countByWeekday;
 
-    // 시간대별 실패 횟수 ("DAWN(00-06)", "MORNING(06-12)" ...)
+    // 예: {"MORNING(6-12)": 3, "EVENING(18-22)": 4, ...}
     private final Map<String, Long> countByTimeOfDay;
 
-    // 가장 실패가 많이 일어난 요일 (없으면 null)
+    // 예: "TUESDAY", "FRIDAY"
     private final String mostFailedWeekday;
 
-    // 가장 실패가 많이 일어난 시간대 (없으면 null)
+    // 예: "EVENING(18-22)"
     private final String mostFailedTimeOfDay;
 
     public FailurePatternAnalysisResponse(
