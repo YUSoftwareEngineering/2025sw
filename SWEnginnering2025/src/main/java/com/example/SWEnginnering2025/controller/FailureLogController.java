@@ -26,19 +26,19 @@ public class FailureLogController {
         this.failureLogService = failureLogService;
     }
 
-    // 시퀀스: getFailureTags()
+    // 시퀀스: getFailureTags(), failuretag 조회용
     @GetMapping("/tags")
     public ResponseEntity<List<FailureTagDto>> getFailureTags(@RequestParam Long userId) {
         return ResponseEntity.ok(failureLogService.getFailureTags(userId));
     }
 
-    // 시퀀스: createFailureTag(CreateTagRequest)
+    // 시퀀스: createFailureTag(CreateTagRequest) failuretag 생성용
     @PostMapping("/tags")
     public ResponseEntity<FailureTagDto> createTag(@RequestBody CreateTagRequest request) {
         return ResponseEntity.ok(failureLogService.createFailureTag(request));
     }
 
-    // 시퀀스: logFailure(LogFailureRequest)
+    // 시퀀스: logFailure(LogFailureRequest) 실패로그생성
     @PostMapping("/log")
     public ResponseEntity<FailureLogResponse> logFailure(@RequestBody LogFailureRequest request) {
         FailureLogResponse response = failureLogService.logFailure(request);
